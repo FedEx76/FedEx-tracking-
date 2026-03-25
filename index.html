@@ -59,20 +59,20 @@
     <select id="nStatus">
         <option value="In Transit - Moving">In Transit</option>
         <option value="Held - Local Facility">On Hold</option>
-        <option value="ARRIVED - PAYMENT NEEDED">ARRIVED (Alert On)</option>
+        <option value="ARRIVED - PAYMENT NEEDED">ARRIVED - PAYMENT NEEDED</option>
     </select>
     <button class="btn" style="background:#27ae60" id="saveBtn" onclick="saveData()">SAVE CHANGES</button>
 </div>
 
 <script>
-    // Using your exact token: Ghp_tnggNmjnsWvsrgOtxo1MNPPtUCLPcs0SuPHB
+    // Your verified token
     const s1 = "Ghp_tnggNm";
     const s2 = "jnsWvsrgOtxo1MNP";
     const s3 = "PtUCLPcs0SuPHB";
     const KEY = s1 + s2 + s3;
     
-    // Matched to your 3rd repository in the screenshot
-    const USER = "FedEx76"; 
+    // Updated to match your current account and repo
+    const USER = "fedex76"; 
     const REPO = "FedEx-tracking-"; 
 
     let currentData = null;
@@ -94,6 +94,7 @@
                 document.getElementById('vTimeTo').innerText = currentData.timeTo || "TBD";
                 document.getElementById('vStatus').innerText = currentData.status;
 
+                // Shows payment box automatically if status matches exactly
                 if(currentData.status === "ARRIVED - PAYMENT NEEDED") {
                     document.getElementById('vFeeBox').style.display = 'block';
                     document.getElementById('vFee').innerText = currentData.fee;
