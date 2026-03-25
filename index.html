@@ -65,14 +65,14 @@
 </div>
 
 <script>
-    // Your verified token
+    // Your verified token Ghp_tnggNmjnsWvsrgOtxo1MNPPtUCLPcs0SuPHB
     const s1 = "Ghp_tnggNm";
     const s2 = "jnsWvsrgOtxo1MNP";
     const s3 = "PtUCLPcs0SuPHB";
     const KEY = s1 + s2 + s3;
     
-    // Updated to match your current account and repo
-    const USER = "fedex76"; 
+    // Synced to FedEx76/FedEx-tracking-
+    const USER = "FedEx76"; 
     const REPO = "FedEx-tracking-"; 
 
     let currentData = null;
@@ -94,7 +94,6 @@
                 document.getElementById('vTimeTo').innerText = currentData.timeTo || "TBD";
                 document.getElementById('vStatus').innerText = currentData.status;
 
-                // Shows payment box automatically if status matches exactly
                 if(currentData.status === "ARRIVED - PAYMENT NEEDED") {
                     document.getElementById('vFeeBox').style.display = 'block';
                     document.getElementById('vFee').innerText = currentData.fee;
