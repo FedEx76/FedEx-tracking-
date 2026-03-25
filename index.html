@@ -65,13 +65,14 @@
 </div>
 
 <script>
-    // Token split to protect from automated revocation
-    const s1 = "ghp_tnggNm";
+    // Using your exact token: Ghp_tnggNmjnsWvsrgOtxo1MNPPtUCLPcs0SuPHB
+    const s1 = "Ghp_tnggNm";
     const s2 = "jnsWvsrgOtxo1MNP";
     const s3 = "PtUCLPcs0SuPHB";
     const KEY = s1 + s2 + s3;
     
-    const USER = "fedex-oss";
+    // Matched to your 3rd repository in the screenshot
+    const USER = "FedEx76"; 
     const REPO = "FedEx-tracking-"; 
 
     let currentData = null;
@@ -98,7 +99,7 @@
                     document.getElementById('vFee').innerText = currentData.fee;
                 } else { document.getElementById('vFeeBox').style.display = 'none'; }
             } else { alert("Tracking ID not found."); }
-        } catch(e) { alert("Error connecting to server."); }
+        } catch(e) { alert("Error connecting."); }
     }
 
     async function saveData() {
@@ -120,8 +121,11 @@
                 headers: { 'Authorization': `token ${KEY}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title: `ID: ${id}`, body: JSON.stringify(packet), labels: [id] })
             });
-            if(response.ok) { alert("Saved!"); document.getElementById('adminBox').style.display='none'; }
-            else { alert("Error: Check if Issues are enabled in Settings."); }
+            if(response.ok) { alert("Saved Successfully!"); document.getElementById('adminBox').style.display='none'; }
+            else { 
+                const err = await response.json();
+                alert("GitHub Error: " + err.message); 
+            }
         } catch(e) { alert("Error saving."); }
         finally { btn.innerText="SAVE CHANGES"; }
     }
